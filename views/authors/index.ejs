@@ -9,4 +9,7 @@ All The Authors
 <% for(var x = 0; x < authors.length; x++){ %>
     <%= authors[x].name %>
     <br>
-<% } %>
+    <a href="/authors/<%= authors[x].id %>">View</a>
+    <a href="/authors/<%= authors[x].id %>/edit">Edit</a>
+    <%- include('../partials/deleteForm', {url: `/authors/${authors[x].id}` }) %>
+ <% } %>
