@@ -36,7 +36,7 @@ router.get("/", async function(req, res){
 
 // New Book Route
 router.get("/new", async function(req, res){
-   renderNewPage(res, new Book());
+   renderFormPage(res, new Book(), 'new');
     
 });
 
@@ -54,13 +54,106 @@ router.post("/", async function(req, res){
     saveCover(book, req.body.cover)
     try{
         const newBook = await book.save();
-        res.redirect('books');
+        res.redirect(`books/${newBook.id}`)
+        //res.redirect('books');
+        
     } catch(e) {
         console.error(e);
         
-        renderNewPage(res, book, true);
+        renderFormPage(res, book, 'new', true);
     }
 });
+
+
+// Show book route
+router.get('/:id', async function(req, res){
+    try{
+        const book = await Book.findById(req.params.id).populate('author').exec();
+        res.render('books/show', {book: book})
+    } catch(e){
+        console.error(e);
+        res.redirect('/')
+    }
+});
+
+// Edit Book Route
+router.get("/:id/edit", async function(req, res){
+    try{
+        const book = await Book.findById(req.params.id)
+        renderFormPage(res, book, "edit");
+    } catch(e){
+        console.error(e);
+        res.redirect('/');
+    }
+});
+
+// Update Route
+router.put("/:id", async function(req, res){
+   
+    let book 
+    
+
+    try{
+        book = await Book.findById(req.params.id)
+        
+        book.title = req.body.title
+        book.author = req.body.author
+        book.publishDate = new Date(req.body.publishDate)
+        book.pageCount = req.body.pageCount
+        book.description = req.body.description
+        
+        if (req.body.cover != null && req.body.cover !== ''){
+            saveCover(book, req.body.cover)
+        }
+        await book.save()
+        res.redirect(`/books/${book.id}`)
+        //res.redirect('books');
+        
+    } catch(e) {
+        console.error(e);
+        if(book != null){
+            renderFormPage(res, book, 'edit', true);
+        } else{
+            res.redirect('/');
+        }
+        
+    }
+});
+
+
+// Show book route
+router.get('/:id', async function(req, res){
+    try{
+        const book = await Book.findById(req.params.id).populate('author').exec();
+        res.render('books/show', {book: book})
+    } catch(e){
+        console.error(e);
+        res.redirect('/')
+    }
+});
+
+
+// Delete Route
+router.delete('/:id', async function(req, res){
+    let book
+    try{
+        book = await Book.findById(req.params.id)
+        await book.remove()
+        res.redirect('/books');
+    } catch (e){
+        console.log(e);
+        if(book != null){
+            res.render('books/show',{
+                book: book,
+                errorMessage: "Could not remove book"
+            });
+        } else {
+            res.redirect('/');
+        }
+    }
+});
+
+
 function saveCover(book, coverEncoded){
     if(coverEncoded == null) return
     const cover = JSON.parse(coverEncoded)
@@ -79,6 +172,42 @@ async function renderNewPage(res, book, hasError = false){
         }
         if(hasError) params.errorMessage = "there was an error creating book";
         res.render("books/new", params);
+    } catch(e) {
+        console.log(e);
+        res.redirect('/books');
+    }
+}
+
+async function renderEditPage(res, book, hasError = false){
+    try{
+        const authors = await Author.find({});
+        const params = {
+            authors: authors,
+            book: book
+        }
+        if(hasError) params.errorMessage = "there was an error creating book";
+        res.render("books/new", params);
+    } catch(e) {
+        console.log(e);
+        res.redirect('/books');
+    }
+}
+
+async function renderFormPage(res, book, form, hasError = false){
+    try{
+        const authors = await Author.find({});
+        const params = {
+            authors: authors,
+            book: book
+        }
+        if(hasError){
+            if(form === "edit"){
+                params.errorMessage = "there was an error updating book";
+            } else {
+                params.errorMessage = "there was an error creating book";
+            }
+        } 
+        res.render(`books/${form}`, params);
     } catch(e) {
         console.log(e);
         res.redirect('/books');
