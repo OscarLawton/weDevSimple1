@@ -19,7 +19,7 @@
     margin-top: 2rem;
     margin-left: 2rem;
     flex-grow: 1;
-    flex-basis: 1;
+    flex-basis: 0;
   }
   
   .form-item:first-child {
@@ -27,7 +27,7 @@
   }
   
   .form-item-no-grow {
-    flex-grow: 0.1;
+    flex-grow: 0;
   }
   
   .form-row-end {

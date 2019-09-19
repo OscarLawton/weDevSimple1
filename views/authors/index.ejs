@@ -10,12 +10,14 @@
     <button class="btn btn-primary" type="submit">Search</button>
 </div>
 </form>
-<br>
+
 <% for(var x = 0; x < authors.length; x++){ %>
-    <div><%= authors[x].name %></div>
-    <div class="btn-row">
-        <a class="btn btn-primary" href="/authors/<%= authors[x].id %>">View</a>
-        <a class="btn btn-primary" href="/authors/<%= authors[x].id %>/edit">Edit</a>
-        <%- include('../partials/deleteForm', {url: `/authors/${authors[x].id}` }) %>
+    <div class="author-row">
+        <div class="author-name"><%= authors[x].name %></div>
+        <div class="btn-row">
+            <a class="btn btn-primary" href="/authors/<%= authors[x].id %>">View</a>
+            <a class="btn btn-primary" href="/authors/<%= authors[x].id %>/edit">Edit</a>
+            <%- include('../partials/deleteForm', {url: `/authors/${authors[x].id}` }) %>
+        </div>
     </div>
  <% } %>
