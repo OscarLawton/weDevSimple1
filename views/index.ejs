@@ -1,8 +1,6 @@
 <h1 class="page-header">Recently Added</h1>
 <div>
     <% for(var x = 0; x< books.length; x++){ %>
-        <a href="/books/<%= books[x].id %>">
-            <img height="150" width="100" src="<%= books[x].coverImagePath %>">
-        </a>
+        <a href="/books/<%= books[x].id %>"><img height="150" width="100" src="<%= books[x].coverImagePath %>"></a>
     <% } %>
 </div>
